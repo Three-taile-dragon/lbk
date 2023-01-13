@@ -1,0 +1,511 @@
+<template>
+  <div class="page">
+    <el-container>
+      <el-header height="10%">
+        <div class="head">
+          <div class="item_info">
+            <img src="@/assets/icon.svg" alt="" />
+            <span class="text">中医药平台</span>
+          </div>
+          <span class="text_2"
+            >此项目为一个中医药平台，旨在为---更好的服务</span
+          >
+        </div>
+      </el-header>
+      <el-main>
+        <div class="login_box">
+          <!-- 登录表单区域 -->
+          <el-tabs :stretch="true">
+            <el-tab-pane label="账号密码登录">
+              <!-- 账号密码登录表单 -->
+              <el-form
+                ref="pwdLoginFormRef"
+                :model="state.pwdLoginForm"
+                :rules="state.pwdLoginFormRules"
+              >
+                <!-- 用户名 -->
+                <el-form-item prop="username">
+                  <el-input
+                    placeholder="用户名/邮箱/手机号"
+                    clearable
+                    prefix-icon="User"
+                    v-model="state.pwdLoginForm.username"
+                  >
+                  </el-input>
+                </el-form-item>
+                <!-- 密码 -->
+                <el-form-item prop="password">
+                  <el-input
+                    placeholder="密码"
+                    type="password"
+                    show-password
+                    prefix-icon="lock"
+                    v-model="state.pwdLoginForm.password"
+                  >
+                  </el-input>
+                </el-form-item>
+                <!-- 按钮区域 -->
+                <el-form-item class="login_btns">
+                  <el-button
+                    type="primary"
+                    @click="pwdLogin"
+                    :loading="state.loading"
+                    >登录</el-button
+                  >
+                  <el-button type="success" @click="toRegister">注册</el-button>
+                </el-form-item>
+              </el-form>
+            </el-tab-pane>
+            <el-tab-pane label="邮箱验证登录">
+              <!-- 邮箱验证登录表单 -->
+              <el-form
+                ref="emailLoginFormRef"
+                :model="state.emailLoginForm"
+                :rules="state.emailLoginFormRules"
+              >
+                <!-- 邮箱 -->
+                <el-form-item prop="email">
+                  <el-input
+                    placeholder="邮箱"
+                    clearable
+                    prefix-icon="message"
+                    v-model="state.emailLoginForm.email"
+                  >
+                  </el-input>
+                </el-form-item>
+                <!-- 邮箱验证码 -->
+                <el-form-item prop="emailCode">
+                  <el-input
+                    placeholder="验证码"
+                    prefix-icon="key"
+                    v-model="state.emailLoginForm.emailCode"
+                  >
+                    <template #append>
+                      <el-button
+                        :disabled="state.disabled"
+                        @click="getEmailValidateCode"
+                        >{{ state.buttonText }}
+                      </el-button>
+                    </template>
+                  </el-input>
+                </el-form-item>
+                <!-- 按钮区域 -->
+                <el-form-item class="login_btns">
+                  <el-button type="primary" @click="emailLogin">登录</el-button>
+                  <el-button type="success" @click="toRegister">注册</el-button>
+                </el-form-item>
+              </el-form>
+            </el-tab-pane>
+            <el-tab-pane label="手机验证登录">
+              <!-- 手机验证登录表单 -->
+              <el-form
+                ref="phoneLoginFormRef"
+                :model="state.phoneLoginForm"
+                :rules="state.phoneLoginFormRules"
+              >
+                <!-- 手机号 -->
+                <el-form-item prop="phone">
+                  <el-input
+                    placeholder="手机号"
+                    clearable
+                    prefix-icon="phone"
+                    v-model="state.phoneLoginForm.phone"
+                  >
+                  </el-input>
+                </el-form-item>
+                <!-- 手机验证码 -->
+                <el-form-item prop="phoneCode">
+                  <el-input
+                    placeholder="验证码"
+                    prefix-icon="key"
+                    v-model="state.phoneLoginForm.phoneCode"
+                  >
+                    <template #append>
+                      <el-button>获取验证码</el-button>
+                    </template>
+                  </el-input>
+                </el-form-item>
+                <!-- 按钮区域 -->
+                <el-form-item class="login_btns">
+                  <el-button type="primary" @click="phoneLogin">登录</el-button>
+                  <el-button type="success" @click="toRegister">注册</el-button>
+                </el-form-item>
+              </el-form>
+            </el-tab-pane>
+            <div class="login_footer">
+              登录即表示您已阅读并同意
+              <a href="#">服务条款</a>
+            </div>
+          </el-tabs>
+        </div>
+      </el-main>
+      <el-footer>
+        <div class="foot">
+          <span class="font_1">Copyright © DragonTeam出品</span>
+        </div>
+      </el-footer>
+    </el-container>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive, getCurrentInstance } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import qs from "qs";
+const proxy = getCurrentInstance() as any;
+
+var checkEmail = (
+  rule: any,
+  value: string,
+  cb: (arg0: Error | any) => void
+) => {
+  // 验证邮箱的正则表达式
+  const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/;
+  if (regEmail.test(value)) {
+    // 合法的邮箱
+    return cb(undefined);
+  }
+  cb(new Error("请输入合法的邮箱"));
+};
+// 验证手机号的规则
+var checkMobile = (
+  rule: any,
+  value: string,
+  cb: (arg0: Error | any) => void
+) => {
+  // 验证手机号的正则表达式
+  // const regMobile =
+  //   /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+  const regMobile = /^1[3456789]\d{9}$/;
+  if (regMobile.test(value)) {
+    return cb(undefined);
+  }
+  cb(new Error("请输入合法的手机号"));
+};
+const router = useRouter();
+const pwdLoginFormRef = ref(null);
+const emailLoginFormRef = ref(null);
+const phoneLoginFormRef = ref(null);
+// let loading = ref(false);
+// let disabled = ref(false);
+// let buttonText = ref("获取验证码");
+const state = reactive({
+  pwdLoginForm: {
+    username: "",
+    password: "",
+  },
+  emailLoginForm: {
+    email: "",
+    emailCode: "",
+  },
+  phoneLoginForm: {
+    phone: "",
+    phoneCode: "",
+  },
+  pwdLoginFormRules: {
+    username: [
+      {
+        required: true,
+        message: "请输入你的账号",
+        trigger: "blur",
+      },
+    ],
+    // 验证密码是否合法
+    password: [
+      {
+        required: true,
+        message: "请输入你的密码",
+        trigger: "blur",
+      },
+    ],
+  },
+  emailLoginFormRules: {
+    email: [
+      {
+        required: true,
+        message: "请输入你的邮箱",
+        trigger: "blur",
+      },
+      {
+        validator: checkEmail,
+        trigger: "blur",
+      },
+    ],
+    emailCode: [
+      {
+        required: true,
+        message: "请输入你获取到的验证码",
+        trigger: "blur",
+      },
+    ],
+  },
+  phoneLoginFormRules: {
+    phone: [
+      {
+        required: true,
+        message: "请输入你的手机号",
+        trigger: "blur",
+      },
+      {
+        validator: checkMobile,
+        trigger: "blur",
+      },
+    ],
+    phoneCode: [
+      {
+        required: true,
+        message: "请输入你获取到的验证码",
+        trigger: "blur",
+      },
+    ],
+  },
+  // 控制获取验证码
+  loading: false,
+  disabled: false,
+  buttonText: "获取验证码",
+  duration: 60,
+  timer: 0,
+});
+// 账号密码登录
+const pwdLogin = async () => {
+  state.loading = true;
+  const obj = {
+    username: state.pwdLoginForm.username,
+    password: state.pwdLoginForm.password,
+  };
+  try {
+    const res = await new proxy.$request(
+      proxy.$urls.m().pwdLogin,
+      qs.stringify(obj)
+    ).modepost();
+    console.log(res);
+    if (res.data.success != true) {
+      new proxy.$tips(res.data.message, "warning").mess_age();
+    } else {
+      new proxy.$tips(res.data.message, "success").mess_age();
+      localStorage.setItem("token", res.data.data.token);
+      // 成功跳转页面
+    }
+    state.loading = false;
+  } catch (e) {
+    state.loading = false;
+    new proxy.$tips("服务器发生错误", "error").mess_age();
+  }
+};
+// 获取邮箱验证码
+const getEmailValidateCode = () => {
+  const obj = {
+    email: state.emailLoginForm.email,
+  };
+  axios.post("requestUrl", qs.stringify(obj)).then((res) => {
+    if (res.data.success != true) {
+      new proxy.$tips(res.data.message, "warning").mess_age();
+    } else {
+      console.log(res.data);
+      console.log(res.headers);
+      new proxy.$tips(res.data.message, "success").mess_age();
+      // localStorage.setItem('token', res.data.data.token)
+      state.timer = setInterval(() => {
+        state.disabled = true;
+        const tmp = state.duration--;
+        state.buttonText = `${tmp}秒后重新获取`;
+        if (tmp <= 0) {
+          clearInterval(state.timer);
+          state.duration = 60;
+          state.buttonText = "重新获取验证码";
+          state.disabled = false;
+        }
+      }, 1000);
+    }
+  });
+};
+// 邮箱验证登录
+const emailLogin = async () => {
+  state.loading = true;
+  const obj = {
+    email: state.emailLoginForm.email,
+    emailValidateCode: state.emailLoginForm.emailCode,
+    token: localStorage.getItem("token"),
+  };
+  try {
+    const res = await new proxy.$request(
+      proxy.$urls.m().emailLogin,
+      qs.stringify(obj)
+    ).modepost();
+    if (res.data.success != true) {
+      new proxy.$tips(res.data.message, "warning").mess_age();
+    } else {
+      new proxy.$tips(res.data.message, "success").mess_age();
+      localStorage.setItem("token", res.data.data.token);
+      // 成功跳转页面
+    }
+    state.loading = false;
+  } catch (e) {
+    state.loading = false;
+    new proxy.$tips("服务器发生错误", "error").mess_age();
+  }
+};
+// 手机号验证登录
+const phoneLogin = async () => {
+  const obj = {
+    phone: state.phoneLoginForm.phone,
+    phoneCode: state.phoneLoginForm.phoneCode,
+  };
+  console.log(obj);
+};
+const toRegister = () => {
+  router.push({
+    path: "/register",
+  });
+};
+</script>
+
+<style scoped>
+.page {
+  background-image: url(@/assets/background.png);
+  width: 100%;
+  height: 100%;
+  /* overflow: hidden;
+  position: fixed;
+  background-size: cover; */
+  /* 背景图垂直、水平均居中 */
+  background-position: center center;
+  /* 背景图不平铺 */
+  background-repeat: no-repeat;
+  /* 当内容高度大于图片高度时，背景图像的位置相对于viewport固定 */
+  background-attachment: fixed;
+  /* 让背景图基于容器大小伸缩 */
+  background-size: cover;
+  /* 设置背景颜色，背景图加载过程中会显示背景色 */
+  background-color: #464646;
+}
+.head {
+  padding-top: 2%;
+  width: 100%;
+  height: 20%;
+}
+.head > img {
+  width: 50%;
+  height: 50%;
+}
+.item_info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1%;
+}
+.text {
+  margin-left: 40px;
+  color: #000000d9;
+  font-size: 45px;
+  font-family: HarmonyOSSansSC;
+  font-weight: 600;
+  text-align: left;
+  /* line-height: 30px; */
+}
+.text_2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  font-family: HarmonyOSSansSC;
+  /* line-height: 24px; */
+  color: #00000073;
+  margin: 0 auto;
+}
+.el-footer {
+  position: fixed;
+  text-align: center;
+  /* box-sizing: content-box; */
+  white-space: nowrap;
+  bottom: 2%;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+}
+.foot {
+  padding-top: 20px;
+}
+@media only screen and (max-width: 767px) {
+  .page {
+    background-image: url(@/assets/background_phone.png);
+  }
+}
+
+@media (max-width: 400px) {
+  .text {
+    font-size: 1.5rem;
+  }
+  .text_2 {
+    font-size: 1rem;
+  }
+  .foot {
+    font-size: 0.5rem;
+  }
+}
+@media (min-width: 401px) and (max-width: 639px) {
+  .text {
+    font-size: 1.7rem;
+  }
+  .text_2 {
+    font-size: 1.2rem;
+  }
+  .foot {
+    font-size: 0.7rem;
+  }
+}
+@media (min-width: 640px) {
+  .text {
+    font-size: 2rem;
+  }
+  .text_2 {
+    font-size: 1.5rem;
+  }
+  .foot {
+    font-size: 0.9rem;
+  }
+}
+.login_box {
+  /* width: 30vw;
+  height: 50vh; */
+  max-width: 550px;
+  max-height: 250px;
+  margin: 1% auto;
+}
+.login_footer {
+  margin-top: 3vh;
+}
+
+.el-tabs >>> .el-tabs__item.is-active {
+  color: #000000;
+  font-weight: 550;
+}
+/* .el-tab-pane {
+  width: 100%;
+} */
+.el-form {
+  text-align: center;
+}
+
+.el-input {
+  width: 100%;
+  --el-input-font-color: black;
+}
+
+.el-button {
+  border-radius: 10px;
+  float: none;
+}
+
+.el-button--primary {
+  --el-button-font-color: #409e40;
+  --el-button-background-color: #ffffff;
+  --el-button-border-color: #409eff;
+  --el-button-hover-color: #66b1ff;
+  --el-button-active-font-color: #e6e6e6;
+  --el-button-active-background-color: #0d84ff;
+  --el-button-active-border-color: #0d84ff;
+}
+</style>
