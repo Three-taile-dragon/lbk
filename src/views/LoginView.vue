@@ -52,7 +52,11 @@
                     :loading="state.loading"
                     >登录</el-button
                   >
-                  <el-button type="success" @click="toRegister">注册</el-button>
+                  <!-- <el-button type="success" @click="toRegister">注册</el-button> -->
+                  <div class="login_extends_option">
+                    <a href="#" id="forge_pw">忘记密码</a>
+                    <a href="#" id="new_reg">新用户注册</a>
+                  </div>
                 </el-form-item>
               </el-form>
             </el-tab-pane>
@@ -92,7 +96,11 @@
                 <!-- 按钮区域 -->
                 <el-form-item class="login_btns">
                   <el-button type="primary" @click="emailLogin">登录</el-button>
-                  <el-button type="success" @click="toRegister">注册</el-button>
+                  <!-- <el-button type="success" @click="toRegister">注册</el-button> -->
+                  <div class="login_extends_option">
+                    <a href="#" id="forge_pw">忘记密码</a>
+                    <a href="#" id="new_reg">新用户注册</a>
+                  </div>
                 </el-form-item>
               </el-form>
             </el-tab-pane>
@@ -128,7 +136,11 @@
                 <!-- 按钮区域 -->
                 <el-form-item class="login_btns">
                   <el-button type="primary" @click="phoneLogin">登录</el-button>
-                  <el-button type="success" @click="toRegister">注册</el-button>
+                  <!-- <el-button type="success" @click="toRegister">注册</el-button> -->
+                  <div class="login_extends_option">
+                    <a href="#" id="forge_pw">忘记密码</a>
+                    <a href="#" id="new_reg">新用户注册</a>
+                  </div>
                 </el-form-item>
               </el-form>
             </el-tab-pane>
@@ -475,7 +487,7 @@ const toRegister = () => {
   margin: 1% auto;
 }
 .login_footer {
-  margin-top: 3vh;
+  margin-top: 5vh;
 }
 
 .el-tabs >>> .el-tabs__item.is-active {
@@ -495,17 +507,34 @@ const toRegister = () => {
 }
 
 .el-button {
-  border-radius: 10px;
-  float: none;
+  width: 100%;
+  font-weight: 700;
 }
 
-.el-button--primary {
-  --el-button-font-color: #409e40;
-  --el-button-background-color: #ffffff;
-  --el-button-border-color: #409eff;
-  --el-button-hover-color: #66b1ff;
-  --el-button-active-font-color: #e6e6e6;
-  --el-button-active-background-color: #0d84ff;
-  --el-button-active-border-color: #0d84ff;
+.login_extends_optinon {
+  position: relative;
+  outline-style: none;
+  cursor: pointer;
+}
+#forge_pw {
+  position: absolute;
+  font-size: 14px;
+  left: 0;
+  float: left;
+  top: 30px;
+  color: #6c7d8f;
+  text-decoration: none;
+}
+#new_reg {
+  position: absolute;
+  font-size: 14px;
+  right: 0;
+  float: right;
+  top: 30px;
+  color: #067bef;
+  text-decoration: none;
+}
+* >>> .el-input-group__append {
+  justify-content: unset;
 }
 </style>
