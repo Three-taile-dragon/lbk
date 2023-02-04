@@ -55,55 +55,14 @@
                   <!-- <el-button type="success" @click="toRegister">注册</el-button> -->
                   <div class="login_extends_option">
                     <a href="#" id="forge_pw">忘记密码</a>
-                    <a href="#" id="new_reg">新用户注册</a>
+                    <router-link id="new_reg" to="/register"
+                      >新用户注册</router-link
+                    >
                   </div>
                 </el-form-item>
               </el-form>
             </el-tab-pane>
-            <el-tab-pane label="邮箱验证登录">
-              <!-- 邮箱验证登录表单 -->
-              <el-form
-                ref="emailLoginFormRef"
-                :model="state.emailLoginForm"
-                :rules="state.emailLoginFormRules"
-              >
-                <!-- 邮箱 -->
-                <el-form-item prop="email">
-                  <el-input
-                    placeholder="邮箱"
-                    clearable
-                    prefix-icon="message"
-                    v-model="state.emailLoginForm.email"
-                  >
-                  </el-input>
-                </el-form-item>
-                <!-- 邮箱验证码 -->
-                <el-form-item prop="emailCode">
-                  <el-input
-                    placeholder="验证码"
-                    prefix-icon="key"
-                    v-model="state.emailLoginForm.emailCode"
-                  >
-                    <template #append>
-                      <el-button
-                        :disabled="state.disabled"
-                        @click="getEmailValidateCode"
-                        >{{ state.buttonText }}
-                      </el-button>
-                    </template>
-                  </el-input>
-                </el-form-item>
-                <!-- 按钮区域 -->
-                <el-form-item class="login_btns">
-                  <el-button type="primary" @click="emailLogin">登录</el-button>
-                  <!-- <el-button type="success" @click="toRegister">注册</el-button> -->
-                  <div class="login_extends_option">
-                    <a href="#" id="forge_pw">忘记密码</a>
-                    <a href="#" id="new_reg">新用户注册</a>
-                  </div>
-                </el-form-item>
-              </el-form>
-            </el-tab-pane>
+
             <el-tab-pane label="手机验证登录">
               <!-- 手机验证登录表单 -->
               <el-form
@@ -139,7 +98,9 @@
                   <!-- <el-button type="success" @click="toRegister">注册</el-button> -->
                   <div class="login_extends_option">
                     <a href="#" id="forge_pw">忘记密码</a>
-                    <a href="#" id="new_reg">新用户注册</a>
+                    <router-link id="new_reg" to="/register"
+                      >新用户注册</router-link
+                    >
                   </div>
                 </el-form-item>
               </el-form>
