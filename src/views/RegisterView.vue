@@ -18,7 +18,7 @@
           <el-tabs :stretch="true">
             <el-tab-pane label="注册">
               <el-form
-                ref="pwdLoginFormRef"
+                ref="pwdRegisterFormRef"
                 :model="state.pwdRegisterForm"
                 :rules="state_rul.pwdRegisterFormRules"
               >
@@ -134,7 +134,11 @@
                     prefix-icon="CircleCheck"
                   >
                     <template #append>
-                      <el-button icon="Position">获取验证码</el-button>
+                      <el-button
+                        icon="Position"
+                        @click="getCaptcha(state.pwdRegisterForm.mobile)"
+                        >获取验证码</el-button
+                      >
                     </template>
                   </el-input>
                 </el-form-item>
@@ -142,7 +146,16 @@
                 <el-form-item class="reg_btns">
                   <el-button
                     type="primary"
-                    @click="pwdLogin"
+                    @click="
+                      pwdRegister(
+                        state.pwdRegisterForm.email,
+                        state.pwdRegisterForm.username,
+                        state.pwdRegisterForm.password,
+                        state.pwdRegisterForm.password2,
+                        state.pwdRegisterForm.mobile,
+                        state.pwdRegisterForm.captcha
+                      )
+                    "
                     :loading="state.loading"
                     >注册</el-button
                   >
@@ -178,11 +191,11 @@ import { ref, reactive, watch, getCurrentInstance } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import qs from "qs";
-import { valueEquals } from "element-plus";
-import { classBody } from "@babel/types";
-
+import { useUserStore } from "@/stores/user/login";
+import type { UserGetCaptchaInfo, UserRegisterInfo } from "@/apis/user";
 // 引入验证方法
 import { checkPasswordRule, level } from "@/plugins/checkPassword";
+import useStore from "element-plus/es/components/table/src/store";
 
 // 强度条颜色
 const barColor = ref("");
@@ -284,9 +297,6 @@ var checkAccount = (
 
 const router = useRouter();
 const pwdRegisterFormRef = ref(null);
-// let loading = ref(false);
-// let disabled = ref(false);
-// let buttonText = ref("获取验证码");
 const state = reactive({
   pwdRegisterForm: {
     email: "",
@@ -405,35 +415,36 @@ watch(
   }
 );
 
-// 账号密码登录
-const pwdLogin = async () => {
-  state.loading = true;
-  const obj = {
-    username: state.pwdRegisterForm.username,
-    password: state.pwdRegisterForm.password,
-    password2: state.pwdRegisterForm.password2,
+// 账号注册
+const userStore = useUserStore();
+const pwdRegister = (
+  email: string,
+  name: string,
+  passwd: string,
+  passwd2: string,
+  mobile: string,
+  captcha: string
+) => {
+  const parmas: UserRegisterInfo = {
+    userEmail: email,
+    userName: name,
+    userPassword: passwd,
+    userPassword2: passwd2,
+    userMobile: mobile,
+    userCaptcha: captcha,
   };
-  try {
-    const res = await new proxy.$request(
-      proxy.$urls.m().pwdLogin,
-      qs.stringify(obj)
-    ).modepost();
-    console.log(res);
-    if (res.data.success != true) {
-      new proxy.$tips(res.data.message, "warning").mess_age();
-    } else {
-      new proxy.$tips(res.data.message, "success").mess_age();
-      localStorage.setItem("token", res.data.data.token);
-      // 成功跳转页面
-    }
-    state.loading = false;
-  } catch (e) {
-    state.loading = false;
-    new proxy.$tips("服务器发生错误", "error").mess_age();
-  }
+  // console.log(userStore.user);
+  userStore.register(parmas);
 };
 
-const toRegister = () => {
+const getCaptcha = (mobile: string) => {
+  const params: UserGetCaptchaInfo = {
+    userMobile: mobile,
+  };
+  userStore.getCaptcha(params);
+};
+
+const toLogin = () => {
   router.push({
     path: "/login",
   });

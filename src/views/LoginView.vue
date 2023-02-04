@@ -48,7 +48,12 @@
                 <el-form-item class="login_btns">
                   <el-button
                     type="primary"
-                    @click="pwdLogin"
+                    @click="
+                      pwdLogin(
+                        state.pwdLoginForm.username,
+                        state.pwdLoginForm.password
+                      )
+                    "
                     :loading="state.loading"
                     >登录</el-button
                   >
@@ -122,17 +127,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, getCurrentInstance } from "vue";
+import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
 import qs from "qs";
-const proxy = getCurrentInstance() as any;
-
-var checkEmail = (
-  rule: any,
-  value: string,
-  cb: (arg0: Error | any) => void
-) => {
+import { ElMessage } from "element-plus";
+import { useUserStore } from "@/stores/user/login";
+import type { UserLoginInfo } from "@/apis/user";
+function checkEmail(rule: any, value: string, cb: (arg0: Error | any) => void) {
   // 验证邮箱的正则表达式
   const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/;
   if (regEmail.test(value)) {
@@ -140,7 +141,7 @@ var checkEmail = (
     return cb(undefined);
   }
   cb(new Error("请输入合法的邮箱"));
-};
+}
 // 验证手机号的规则
 var checkMobile = (
   rule: any,
@@ -158,11 +159,7 @@ var checkMobile = (
 };
 const router = useRouter();
 const pwdLoginFormRef = ref(null);
-const emailLoginFormRef = ref(null);
 const phoneLoginFormRef = ref(null);
-// let loading = ref(false);
-// let disabled = ref(false);
-// let buttonText = ref("获取验证码");
 const state = reactive({
   pwdLoginForm: {
     username: "",
@@ -241,83 +238,13 @@ const state = reactive({
   timer: 0,
 });
 // 账号密码登录
-const pwdLogin = async () => {
-  state.loading = true;
-  const obj = {
-    username: state.pwdLoginForm.username,
-    password: state.pwdLoginForm.password,
+const userStore = useUserStore();
+const pwdLogin = (name: string, passwd: string) => {
+  const parmas: UserLoginInfo = {
+    userName: name,
+    userPassword: passwd,
   };
-  try {
-    const res = await new proxy.$request(
-      proxy.$urls.m().pwdLogin,
-      qs.stringify(obj)
-    ).modepost();
-    console.log(res);
-    if (res.data.success != true) {
-      new proxy.$tips(res.data.message, "warning").mess_age();
-    } else {
-      new proxy.$tips(res.data.message, "success").mess_age();
-      localStorage.setItem("token", res.data.data.token);
-      // 成功跳转页面
-    }
-    state.loading = false;
-  } catch (e) {
-    state.loading = false;
-    new proxy.$tips("服务器发生错误", "error").mess_age();
-  }
-};
-// 获取邮箱验证码
-const getEmailValidateCode = () => {
-  const obj = {
-    email: state.emailLoginForm.email,
-  };
-  axios.post("requestUrl", qs.stringify(obj)).then((res) => {
-    if (res.data.success != true) {
-      new proxy.$tips(res.data.message, "warning").mess_age();
-    } else {
-      console.log(res.data);
-      console.log(res.headers);
-      new proxy.$tips(res.data.message, "success").mess_age();
-      // localStorage.setItem('token', res.data.data.token)
-      state.timer = setInterval(() => {
-        state.disabled = true;
-        const tmp = state.duration--;
-        state.buttonText = `${tmp}秒后重新获取`;
-        if (tmp <= 0) {
-          clearInterval(state.timer);
-          state.duration = 60;
-          state.buttonText = "重新获取验证码";
-          state.disabled = false;
-        }
-      }, 1000);
-    }
-  });
-};
-// 邮箱验证登录
-const emailLogin = async () => {
-  state.loading = true;
-  const obj = {
-    email: state.emailLoginForm.email,
-    emailValidateCode: state.emailLoginForm.emailCode,
-    token: localStorage.getItem("token"),
-  };
-  try {
-    const res = await new proxy.$request(
-      proxy.$urls.m().emailLogin,
-      qs.stringify(obj)
-    ).modepost();
-    if (res.data.success != true) {
-      new proxy.$tips(res.data.message, "warning").mess_age();
-    } else {
-      new proxy.$tips(res.data.message, "success").mess_age();
-      localStorage.setItem("token", res.data.data.token);
-      // 成功跳转页面
-    }
-    state.loading = false;
-  } catch (e) {
-    state.loading = false;
-    new proxy.$tips("服务器发生错误", "error").mess_age();
-  }
+  userStore.login(parmas);
 };
 // 手机号验证登录
 const phoneLogin = async () => {
@@ -408,6 +335,10 @@ const toRegister = () => {
 }
 
 @media (max-width: 400px) {
+  .item_info > img {
+    height: 1cm;
+    width: 1cm;
+  }
   .text {
     font-size: 1.5rem;
   }
@@ -419,6 +350,10 @@ const toRegister = () => {
   }
 }
 @media (min-width: 401px) and (max-width: 639px) {
+  .item_info > img {
+    height: 1cm;
+    width: 1cm;
+  }
   .text {
     font-size: 1.7rem;
   }
@@ -430,6 +365,10 @@ const toRegister = () => {
   }
 }
 @media (min-width: 640px) {
+  .item_info > img {
+    height: 1.5cm;
+    width: 1.5cm;
+  }
   .text {
     font-size: 2rem;
   }
@@ -444,7 +383,7 @@ const toRegister = () => {
   /* width: 30vw;
   height: 50vh; */
   max-width: 550px;
-  max-height: 250px;
+  max-height: 500px;
   margin: 1% auto;
 }
 .login_footer {

@@ -12,10 +12,13 @@
     }
   ],
   "compilerOptions": {
-    "baseUrl": "./",
-    "paths":{
-      "@": ["src"],
-      "@/*": ["src/*"],
-    }
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+// 加入到这里 
+    "preserveValueImports": false,
+    "isolatedModules": false,
   },
+  
 }
