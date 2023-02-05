@@ -1,19 +1,21 @@
 import axios, { AxiosError } from "axios";
 import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import NProgress from "nprogress";
-import { Message } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 // 创建一个 axios 实例
 const service = axios.create({
-  baseURL: "http://localhost:8080/api", // 所有的请求地址前缀部分
-  timeout: 60000, // 请求超时时间毫秒
+  baseURL: "/api", // 所有的请求地址前缀部分
+  timeout: 2000, // 请求超时时间毫秒
   withCredentials: true, // 异步请求携带cookie
   headers: {
     // 设置后端需要的传参类型
-    "Content-Type": "application/json",
-    token: "your token",
+    "Content-Type": "application/x-www-form-urlencoded",
+    "Access-Control-Allow-Origin": "*",
+    // token: "your token",
   },
 });
-
+service.defaults.headers["Access-Control-Allow-Origin"] = "*";
+service.defaults.headers["Content-Type"] = "application/x-www-form-urlencoded";
 // // 添加请求拦截器
 // service.interceptors.request.use(
 //   function (config) {
@@ -48,7 +50,7 @@ const service = axios.create({
 // );
 
 //请求拦截器
-axios.interceptors.request.use(
+service.interceptors.request.use(
   (config: AxiosRequestConfig) => {
     const token = window.sessionStorage.getItem("token");
     if (token) {
@@ -62,7 +64,7 @@ axios.interceptors.request.use(
   }
 );
 // 响应拦截
-axios.interceptors.response.use(
+service.interceptors.response.use(
   (res: any) => {
     //发请求前做的一些处理，数据转化，配置请求头，设置token,设置loading等，根据需求去添加
     switch (res.data.code) {
@@ -70,9 +72,10 @@ axios.interceptors.response.use(
         sessionStorage.setItem("token", "");
         return res;
       case 200:
-        return JSON.stringify(res.data);
+        // return JSON.stringify(res.data);
+        return res;
       default:
-        return;
+        return res;
     }
   },
   (error: AxiosError) => {
@@ -92,7 +95,7 @@ axios.interceptors.response.use(
           break;
         case 404:
           error.message = "请求错误,未找到该资源";
-          window.location.href = "/NotFound";
+          // window.location.href = "/NotFound";
           break;
         case 405:
           error.message = "请求方法未允许";
@@ -124,11 +127,11 @@ axios.interceptors.response.use(
     } else {
       // 超时处理
       if (JSON.stringify(error).includes("timeout")) {
-        Message.error("服务器响应超时，请刷新当前页");
+        ElMessage.error("服务器响应超时，请刷新当前页");
       }
-      Message.error("连接服务器失败");
+      ElMessage.error("连接服务器失败");
     }
-    Message.error(error.message);
+    ElMessage.error(error.message);
     //处理结束
     //如果不需要错误处理，以上的处理过程都可省略
     return Promise.resolve(error.response);

@@ -16,6 +16,9 @@
     "paths": {
       "@/*": ["./src/*"]
     },
+    "types": [
+      "pinia-plugin-persist"
+    ],
 // 加入到这里 
     "preserveValueImports": false,
     "isolatedModules": false,

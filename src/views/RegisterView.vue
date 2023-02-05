@@ -187,15 +187,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, getCurrentInstance } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios";
-import qs from "qs";
+import { ref, reactive, watch } from "vue";
 import { useUserStore } from "@/stores/user/login";
-import type { UserGetCaptchaInfo, UserRegisterInfo } from "@/apis/user";
+import type { UserGetCaptchaInfo, UserRegisterInfo } from "@/model/user";
 // 引入验证方法
 import { checkPasswordRule, level } from "@/plugins/checkPassword";
-import useStore from "element-plus/es/components/table/src/store";
 
 // 强度条颜色
 const barColor = ref("");
@@ -204,7 +200,6 @@ const width = ref("");
 // 强度条说明
 const strength = ref("");
 
-const proxy = getCurrentInstance() as any;
 const select = ref("");
 
 var checkEmail = (
@@ -295,7 +290,6 @@ var checkAccount = (
   cb(new Error("用户名应为十位以内字母或数字,请重新输入"));
 };
 
-const router = useRouter();
 const pwdRegisterFormRef = ref(null);
 const state = reactive({
   pwdRegisterForm: {
@@ -426,12 +420,12 @@ const pwdRegister = (
   captcha: string
 ) => {
   const parmas: UserRegisterInfo = {
-    userEmail: email,
-    userName: name,
-    userPassword: passwd,
-    userPassword2: passwd2,
-    userMobile: mobile,
-    userCaptcha: captcha,
+    email: email,
+    name: name,
+    password: passwd,
+    password2: passwd2,
+    mobile: mobile,
+    captcha: captcha,
   };
   // console.log(userStore.user);
   userStore.register(parmas);
@@ -439,15 +433,9 @@ const pwdRegister = (
 
 const getCaptcha = (mobile: string) => {
   const params: UserGetCaptchaInfo = {
-    userMobile: mobile,
+    mobile: mobile,
   };
   userStore.getCaptcha(params);
-};
-
-const toLogin = () => {
-  router.push({
-    path: "/login",
-  });
 };
 </script>
 

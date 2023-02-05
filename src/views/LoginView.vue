@@ -132,7 +132,7 @@ import { useRouter } from "vue-router";
 import qs from "qs";
 import { ElMessage } from "element-plus";
 import { useUserStore } from "@/stores/user/login";
-import type { UserLoginInfo } from "@/apis/user";
+import type { UserLoginInfo } from "@/model/user";
 function checkEmail(rule: any, value: string, cb: (arg0: Error | any) => void) {
   // 验证邮箱的正则表达式
   const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/;
@@ -241,8 +241,8 @@ const state = reactive({
 const userStore = useUserStore();
 const pwdLogin = (name: string, passwd: string) => {
   const parmas: UserLoginInfo = {
-    userName: name,
-    userPassword: passwd,
+    account: name,
+    password: passwd,
   };
   userStore.login(parmas);
 };

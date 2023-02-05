@@ -19,6 +19,8 @@
     "element-plus": "^2.2.28",
     "nprogress": "next",
     "pinia": "^2.0.28",
+    "pinia-plugin-persist": "^1.0.0",
+    "pinia-plugin-persistedstate": "^3.0.2",
     "vue": "^3.2.45",
     "vue-request": "next",
     "vue-router": "next"
