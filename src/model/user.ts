@@ -17,13 +17,17 @@ export interface UserGetCaptchaInfo {
   mobile: string;
 }
 
+export interface UserRefreshToken {
+  refreshToken: string;
+}
+
 export interface ResultResponse {
   code: number;
   msg: string;
   data: string;
 }
 
-interface member {
+export interface User {
   name: string;
   mobile: string;
   statue: number;
@@ -37,11 +41,11 @@ interface tokenList {
   accessTokenExp: Date;
 }
 
-export interface LoginResultResponse {
-  code: number;
-  msg: string;
-  data: {
-    member: member;
-    tokenList: tokenList;
-  };
-}
+// export interface LoginResultResponse {
+//   code: number;
+//   msg: string;
+//   data: {
+//     member: member;
+//     tokenList: tokenList;
+//   };
+// }

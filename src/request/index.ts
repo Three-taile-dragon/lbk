@@ -2,6 +2,7 @@ import axios, { AxiosError } from "axios";
 import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import NProgress from "nprogress";
 import { ElMessage } from "element-plus";
+import useUserStore from "@/stores/user/login";
 // 创建一个 axios 实例
 const service = axios.create({
   baseURL: "/api", // 所有的请求地址前缀部分
@@ -11,11 +12,13 @@ const service = axios.create({
     // 设置后端需要的传参类型
     "Content-Type": "application/x-www-form-urlencoded",
     "Access-Control-Allow-Origin": "*",
+    // 'Authorization':'Bearer '+userStore.tokenList.accessToken,
     // token: "your token",
   },
 });
 service.defaults.headers["Access-Control-Allow-Origin"] = "*";
 service.defaults.headers["Content-Type"] = "application/x-www-form-urlencoded";
+// service.defaults.headers["Authorization"] = 'Bearer '+userStore.tokenList.accessToken;
 // // 添加请求拦截器
 // service.interceptors.request.use(
 //   function (config) {
@@ -52,10 +55,11 @@ service.defaults.headers["Content-Type"] = "application/x-www-form-urlencoded";
 //请求拦截器
 service.interceptors.request.use(
   (config: AxiosRequestConfig) => {
-    const token = window.sessionStorage.getItem("token");
+    const userStore = useUserStore();
+    const token = userStore.tokenList.accessToken;
     if (token) {
       // @ts-ignore
-      config.headers.token = token;
+      config.headers.Authorization = "Bearer " + token;
     }
     return config;
   },

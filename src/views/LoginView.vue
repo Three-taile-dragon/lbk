@@ -4,7 +4,7 @@
       <el-header height="10%">
         <div class="head">
           <div class="item_info">
-            <img src="@/assets/icon.svg" alt="" />
+            <img src="@/assets/logo.svg" alt="" />
             <span class="text">中医药平台</span>
           </div>
           <span class="text_2"
@@ -128,9 +128,6 @@
 
 <script setup lang="ts">
 import { ref, reactive } from "vue";
-import { useRouter } from "vue-router";
-import qs from "qs";
-import { ElMessage } from "element-plus";
 import { useUserStore } from "@/stores/user/login";
 import type { UserLoginInfo } from "@/model/user";
 function checkEmail(rule: any, value: string, cb: (arg0: Error | any) => void) {
@@ -157,7 +154,6 @@ var checkMobile = (
   }
   cb(new Error("请输入合法的手机号"));
 };
-const router = useRouter();
 const pwdLoginFormRef = ref(null);
 const phoneLoginFormRef = ref(null);
 const state = reactive({
@@ -254,11 +250,6 @@ const phoneLogin = async () => {
   };
   console.log(obj);
 };
-const toRegister = () => {
-  router.push({
-    path: "/register",
-  });
-};
 </script>
 
 <style scoped>
@@ -346,7 +337,7 @@ const toRegister = () => {
     font-size: 1rem;
   }
   .foot {
-    font-size: 0.5rem;
+    font-size: 0.8rem;
   }
 }
 @media (min-width: 401px) and (max-width: 639px) {
@@ -361,7 +352,7 @@ const toRegister = () => {
     font-size: 1.2rem;
   }
   .foot {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
   }
 }
 @media (min-width: 640px) {

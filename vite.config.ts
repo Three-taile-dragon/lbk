@@ -29,4 +29,13 @@ export default defineConfig({
       },
     },
   },
+  css: {
+    //css 预处理
+    preprocessorOptions: {
+      scss: {
+        //引入 variables.scss全局预定义变量
+        additionalData: `@import "./src/styles/variables.scss";`,
+      },
+    },
+  },
 });

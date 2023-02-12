@@ -3,7 +3,7 @@ import service from "@/request/index";
 import type {
   UserLoginInfo,
   UserRegisterInfo,
-  UserGetCaptchaInfo,
+  UserGetCaptchaInfo, UserRefreshToken,
 } from "@/model/user";
 
 // 获取用户信息 登陆
@@ -26,6 +26,14 @@ export function apiUserRegister(param: UserRegisterInfo) {
 export function apiGetCaptcha(param: UserGetCaptchaInfo) {
   return service({
     url: "getCaptcha",
+    method: "post",
+    data: param,
+  });
+}
+
+export function apiRefreshToken(param: UserRefreshToken) {
+  return service({
+    url: "refreshToken",
     method: "post",
     data: param,
   });

@@ -1,9 +1,15 @@
 import { ElMessage } from "element-plus";
 import { defineStore } from "pinia";
-import { apiGetCaptcha, apiUserLogin, apiUserRegister } from "@/apis/user";
+import {
+  apiGetCaptcha,
+  apiRefreshToken,
+  apiUserLogin,
+  apiUserRegister,
+} from "@/apis/user";
 import type {
   UserGetCaptchaInfo,
   UserLoginInfo,
+  UserRefreshToken,
   UserRegisterInfo,
 } from "@/model/user";
 import router from "@/router";
@@ -57,12 +63,12 @@ export const useUserStore = defineStore("storeUser", {
           });
         } else {
           ElMessage({
-            message: "注册成功，正在转跳到主页面",
+            message: "注册成功，正在转跳到登陆页面",
             type: "success",
             duration: 1000,
           });
           setTimeout(() => {
-            router.push("/");
+            router.push("/login");
           }, 1000);
         }
       });
@@ -81,6 +87,24 @@ export const useUserStore = defineStore("storeUser", {
             type: "success",
             duration: 10000,
           });
+        }
+      });
+    },
+    refreshToken(parmas: UserRefreshToken) {
+      apiRefreshToken(parmas).then((res) => {
+        if (res.data.code != "200") {
+          this.$reset();  //清空用户和Token信息
+          ElMessage({
+            message: "登陆过期，请重新登陆",
+            type: "error",
+            duration: 1000,
+          });
+          setTimeout(() => {
+            router.push("/login");
+          }, 1000);
+        } else {
+          this.tokenList.accessToken = res.data.data.accessToken;
+          this.tokenList.accessTokenExp = res.data.data.accessTokenExp;
         }
       });
     },

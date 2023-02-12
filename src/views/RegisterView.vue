@@ -4,7 +4,7 @@
       <el-header height="10%">
         <div class="head">
           <div class="item_info">
-            <img src="@/assets/icon.svg" alt="" />
+            <img src="@/assets/logo.svg" alt="" />
             <span class="text">中医药平台</span>
           </div>
           <span class="text_2"
@@ -191,8 +191,8 @@ import { ref, reactive, watch } from "vue";
 import { useUserStore } from "@/stores/user/login";
 import type { UserGetCaptchaInfo, UserRegisterInfo } from "@/model/user";
 // 引入验证方法
-import { checkPasswordRule, level } from "@/plugins/checkPassword";
-
+import { checkPasswordRule, level } from "@/utils/checkPassword";
+import { start, close } from "@/utils/nprogress";
 // 强度条颜色
 const barColor = ref("");
 // 强度条长度
@@ -432,10 +432,12 @@ const pwdRegister = (
 };
 
 const getCaptcha = (mobile: string) => {
+  start();
   const params: UserGetCaptchaInfo = {
     mobile: mobile,
   };
   userStore.getCaptcha(params);
+  close();
 };
 </script>
 
@@ -524,7 +526,7 @@ const getCaptcha = (mobile: string) => {
     font-size: 1rem;
   }
   .foot {
-    font-size: 0.5rem;
+    font-size: 0.8rem;
   }
 }
 @media (min-width: 401px) and (max-width: 639px) {
@@ -539,7 +541,7 @@ const getCaptcha = (mobile: string) => {
     font-size: 1.2rem;
   }
   .foot {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
   }
 }
 @media (min-width: 640px) {
