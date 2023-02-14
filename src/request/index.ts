@@ -1,8 +1,7 @@
 import axios, { AxiosError } from "axios";
-import type { AxiosResponse, AxiosRequestConfig } from "axios";
-import NProgress from "nprogress";
+import type { AxiosRequestConfig } from "axios";
 import { ElMessage } from "element-plus";
-import useUserStore from "@/stores/user/login";
+import useUserStore from "@/stores/user/user";
 // 创建一个 axios 实例
 const service = axios.create({
   baseURL: "/api", // 所有的请求地址前缀部分
@@ -59,7 +58,7 @@ service.interceptors.request.use(
     const token = userStore.tokenList.accessToken;
     if (token) {
       // @ts-ignore
-      config.headers.Authorization = "Bearer " + token;
+      config.headers.Authorization = "bearer " + token;
     }
     return config;
   },

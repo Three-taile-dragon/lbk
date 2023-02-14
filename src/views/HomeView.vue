@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import useUserStore from "@/stores/user/login";
+import useUserStore from "@/stores/user/user";
 
 // import { ref, reactive } from "vue";
 const userStore = useUserStore();

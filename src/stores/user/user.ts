@@ -93,7 +93,7 @@ export const useUserStore = defineStore("storeUser", {
     refreshToken(parmas: UserRefreshToken) {
       apiRefreshToken(parmas).then((res) => {
         if (res.data.code != "200") {
-          this.$reset();  //清空用户和Token信息
+          this.$reset(); //清空用户和Token信息
           ElMessage({
             message: "登陆过期，请重新登陆",
             type: "error",

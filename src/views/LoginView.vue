@@ -128,7 +128,7 @@
 
 <script setup lang="ts">
 import { ref, reactive } from "vue";
-import { useUserStore } from "@/stores/user/login";
+import { useUserStore } from "@/stores/user/user";
 import type { UserLoginInfo } from "@/model/user";
 function checkEmail(rule: any, value: string, cb: (arg0: Error | any) => void) {
   // 验证邮箱的正则表达式

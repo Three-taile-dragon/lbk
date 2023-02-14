@@ -188,7 +188,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch } from "vue";
-import { useUserStore } from "@/stores/user/login";
+import { useUserStore } from "@/stores/user/user";
 import type { UserGetCaptchaInfo, UserRegisterInfo } from "@/model/user";
 // 引入验证方法
 import { checkPasswordRule, level } from "@/utils/checkPassword";
